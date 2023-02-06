@@ -8,6 +8,9 @@ export class controller extends Component {
 
     private _spriteButton: Sprite;
 
+    @property(SpriteFrame)
+    addSpriteFrame: SpriteFrame;
+
     //
     private _armatureDisplay: dragonBones.ArmatureDisplay | null = null;
     private _characterSlots: dragonBones.Slot[];
@@ -24,7 +27,7 @@ export class controller extends Component {
         this._characterSlots = armature.getSlots();
 
         let hairSlot: dragonBones.Slot = this._characterSlots.find((value) => {
-            return value.name === "bhair";
+            return value.name === "eyes";
         });;
 
         this.hairList = hairSlot._displayDatas;
@@ -37,7 +40,20 @@ export class controller extends Component {
 
         hairSlot._setColor(new dragonBones.ColorTransform(1, 255 / 255, 0 / 255, 0 / 255, 0, 0, 0, 0));
 
-        this._spriteButton.spriteFrame = this.hairList[0].texture.spriteFrame;
+        let a = this.hairList[0];
+        a.name = "add";
+        a.texture.spriteFrame = this.addSpriteFrame;
+
+        this.hairList.push(a);
+
+        this.hairList.map((value) => {
+            console.log(value.name);
+
+        });
+
+        this._spriteButton.spriteFrame = this.hairList[3].texture.spriteFrame;
+
+        hairSlot.displayIndex = 0;
     }
 
     update(deltaTime: number) {

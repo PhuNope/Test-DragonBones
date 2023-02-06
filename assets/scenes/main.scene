@@ -434,6 +434,10 @@
     "nodeButton": {
       "__id__": 12
     },
+    "addSpriteFrame": {
+      "__uuid__": "52230747-c7f0-4b07-988e-39034578d6a6@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    },
     "_id": "c8OisL+5pB3poVB+BECXJn"
   },
   {
