@@ -3,57 +3,53 @@ const { ccclass, property } = _decorator;
 
 @ccclass('controller')
 export class controller extends Component {
-    @property(Node)
-    private nodeButton: Node;
+    // @property(Node)
+    // private nodeButton: Node;
 
     private _spriteButton: Sprite;
-
-    @property(SpriteFrame)
-    addSpriteFrame: SpriteFrame;
 
     //
     private _armatureDisplay: dragonBones.ArmatureDisplay | null = null;
     private _characterSlots: dragonBones.Slot[];
 
-    hairList: dragonBones.DisplayData[] = [];
+    eyesList: dragonBones.DisplayData[] = [];
 
     onLoad() {
         this._armatureDisplay = this.node.getComponent(dragonBones.ArmatureDisplay);
-        this._spriteButton = this.nodeButton.getComponent(Sprite);
+        //this._spriteButton = this.nodeButton.getComponent(Sprite);
     }
 
     start() {
-        let armature = this._armatureDisplay.armature();
-        this._characterSlots = armature.getSlots();
+        // let armature = this._armatureDisplay.armature();
+        // this._characterSlots = armature.getSlots();
 
-        let hairSlot: dragonBones.Slot = this._characterSlots.find((value) => {
-            return value.name === "eyes";
-        });;
+        // let eyesSlot: dragonBones.Slot = this._characterSlots.find((value) => {
+        //     return value.name === "eyes";
+        // });;
 
-        this.hairList = hairSlot._displayDatas;
+        // this.eyesList = eyesSlot._displayDatas;
 
-        console.log(this.hairList[0].texture.spriteFrame);
+        // console.log(this.eyesList[0]);
 
+        // //let a: dragonBones.CCTextureData = this.hairList[0];
 
+        // eyesSlot._setColor(new dragonBones.ColorTransform(1, 255 / 255, 0 / 255, 0 / 255, 0, 0, 0, 0));
 
-        //let a: dragonBones.CCTextureData = this.hairList[0];
+        // let a = [...[this.eyesList[0]]];
 
-        hairSlot._setColor(new dragonBones.ColorTransform(1, 255 / 255, 0 / 255, 0 / 255, 0, 0, 0, 0));
+        // // a[0].name = "add";
+        // // a[0].texture.spriteFrame = this.addSpriteFrame;
 
-        let a = this.hairList[0];
-        a.name = "add";
-        a.texture.spriteFrame = this.addSpriteFrame;
+        // // this.eyesList.push(a[0]);
 
-        this.hairList.push(a);
+        // // this.eyesList.map((value) => {
+        // //     console.log(value.name);
 
-        this.hairList.map((value) => {
-            console.log(value.name);
+        // // });
 
-        });
+        // this._spriteButton.spriteFrame = this.eyesList[0].texture.spriteFrame;
 
-        this._spriteButton.spriteFrame = this.hairList[3].texture.spriteFrame;
-
-        hairSlot.displayIndex = 0;
+        // eyesSlot.displayIndex = 0;
     }
 
     update(deltaTime: number) {
