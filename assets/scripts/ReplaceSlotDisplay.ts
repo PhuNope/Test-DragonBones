@@ -27,6 +27,13 @@ export class ReplaceSlotDisplay extends Component {
     @property(Prefab)
     buttonTexturePre: Prefab | null = null;
 
+    @property(Node)
+    buttonDelete: Node | null = null;
+
+    //button texture
+    buttonTextureNode: Node | null = null;
+    index: number | null = null;
+
     onLoad() {
         this._armatureDisplay = this.armatureDisplay;
     }
@@ -52,7 +59,7 @@ export class ReplaceSlotDisplay extends Component {
 
         // this._eyesSlotView.displayIndex = 2;
 
-        //this.onLoadDataSaved();
+        this.onLoadDataSaved();
     }
 
     // private getSlotDataName(armatureDisplay: dragonBones.ArmatureDisplay, nameSlot: string): dragonBones.Slot {
@@ -110,7 +117,7 @@ export class ReplaceSlotDisplay extends Component {
 
         // this._eyesSlotView.displayIndex = 0;
 
-        PLayerData.instance.arrButtonData.push(this.armatureDisplay);
+        //PLayerData.instance.arrButtonData.push(this.armatureDisplay);
 
         //DataSave.saveDataStorage(Configs.KEY_STORAGE_ACCESS, PLayerData.instance.arrButtonData);
         Configs.addToListAndSave(this.armatureDisplay);
@@ -120,78 +127,91 @@ export class ReplaceSlotDisplay extends Component {
         this.contentScrollView.addChild(buttonTextureNode);
 
         //
-        let obj: object[] = [];
+        // let obj: object[] = [];
 
-        this._armatureDisplay.armature().getSlots().map((item) => {
-            let a = { name: item.name, index: item.displayIndex, color: item._colorTransform };
+        // this._armatureDisplay.armature().getSlots().map((item) => {
+        //     let a = { name: item.name, index: item.displayIndex, color: item._colorTransform };
 
-            obj.push(a);
-        });
+        //     obj.push(a);
+        // });
 
-        buttonTextureNode.getComponent(ButtonTextureController).setUp(obj, (inputReplaceDisplay) => { this.onChangeView(inputReplaceDisplay); });
+        buttonTextureNode.getComponent(ButtonTextureController).setUpAddSave(this._armatureDisplay, (inputReplaceDisplay) => { this.onChangeView(inputReplaceDisplay); });
+
+        buttonTextureNode.getComponent(ButtonTextureController).setIndexInData(PLayerData.instance.arrButtonData.length - 1);
+
+        buttonTextureNode.getComponent(ButtonTextureController).setDataButtonDelete((buttonNodeInput: Node, indexInput: number) => { this.getDataButtonTexture(buttonNodeInput, indexInput); });
     }
 
     private onChangeView(replaceArmatureDisplay: dragonBones.ArmatureDisplay): void {
         Configs.SetIndexAndColor(replaceArmatureDisplay, this.armatureDisplay);
     }
 
+    private onButtonDelete(): void {
+        console.log(PLayerData.instance.arrButtonData);
+
+        console.log(this.index);
+
+        if (!this.buttonTextureNode || !this.index) return;
+
+        this.buttonTextureNode.destroy();
+
+        PLayerData.instance.arrButtonData.splice(this.index, 1);
+
+        DataSave.saveDataStorage(Configs.KEY_STORAGE_ACCESS, PLayerData.instance.arrButtonData);
+
+        console.log(PLayerData.instance.arrButtonData);
+    }
+
+    getDataButtonTexture(buttonNodeInput: Node, indexInput: number) {
+        this.buttonTextureNode = buttonNodeInput;
+        this.index = indexInput;
+    }
+
     onLoadDataSaved() {
-        let buttonData = PLayerData.instance.arrButtonData[PLayerData.instance.arrButtonData.length - 1];
+        let buttonDataObj = PLayerData.instance.arrButtonData[PLayerData.instance.arrButtonData.length - 1];
 
-        let slots = this._armatureDisplay.armature().getSlots();
+        // let slots = this._armatureDisplay.armature().getSlots();
 
-        buttonData.map((itemGameData) => {
-            let index = slots.findIndex((itemSlots) => {
-                return itemSlots.name === itemGameData["name"];
-            });
+        // buttonDataObj.map((itemGameData) => {
+        //     let index = slots.findIndex((itemSlots) => {
+        //         return itemSlots.name === itemGameData["name"];
+        //     });
 
-            slots[index].displayIndex = itemGameData["index"];
+        //     slots[index].displayIndex = itemGameData["index"];
 
-            slots[index]._setColor(itemGameData["color"]);
-        });
+        //     slots[index]._setColor(itemGameData["color"]);
+        // });
+
+        Configs.setArmatureDisplayByObj(this._armatureDisplay, buttonDataObj);
 
         //set list button
-        PLayerData.instance.arrButtonData.map((item) => {
+        PLayerData.instance.arrButtonData.map((item, index) => {
             let buttonTextureNode = instantiate(this.buttonTexturePre);
 
             this.contentScrollView.addChild(buttonTextureNode);
 
-            buttonTextureNode.getComponent(ButtonTextureController).setUp(item, (inputReplaceDisplay: dragonBones.ArmatureDisplay) => { this.onChangeView(inputReplaceDisplay); });
+            buttonTextureNode.getComponent(ButtonTextureController).setUpOnLoad(item, (inputReplaceDisplay) => { this.onChangeView(inputReplaceDisplay); });
+
+            buttonTextureNode.getComponent(ButtonTextureController).setIndexInData(index);
+
+            buttonTextureNode.getComponent(ButtonTextureController).setDataButtonDelete((buttonNodeInput: Node, indexInput: number) => { this.getDataButtonTexture(buttonNodeInput, indexInput); });
         });
     }
 
     onRedButton() {
-        this.setColorToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(255, 0, 0));
+        Configs.setColorRGBToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(255, 0, 0));
     }
 
     onBlueButton() {
-        this.setColorToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(0, 0, 255));
+        Configs.setColorRGBToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(0, 0, 255));
     }
 
     onGreenButton() {
-        this.setColorToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(0, 255, 0));
+        Configs.setColorRGBToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(0, 255, 0));
     }
 
     onBlackButton() {
-        this.setColorToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(0, 0, 0));
-    }
-
-    getSpriteFrameFromSlot(armatureDisplay: dragonBones.ArmatureDisplay, slotName: string): SpriteFrame[] {
-        let armature = armatureDisplay!.armature();
-        let slot = armature.getSlot(slotName);
-        let slotDatas = slot._displayDatas;
-
-        let arrSpriteFrame: SpriteFrame[] = [];
-
-        slotDatas.map((value) => {
-            arrSpriteFrame.push(value.texture.spriteFrame);
-        });
-
-        return arrSpriteFrame;
-    }
-
-    setColorToSlot(slot: dragonBones.Slot, color: Color): void {
-        slot._setColor(new dragonBones.ColorTransform(1, color.r / 255, color.g / 255, color.b / 255, 0, 0, 0, 0));
+        Configs.setColorRGBToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(0, 0, 0));
     }
 }
 

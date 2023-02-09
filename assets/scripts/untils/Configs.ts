@@ -1,4 +1,4 @@
-import { dragonBones } from "cc";
+import { Color, SpriteFrame, dragonBones } from "cc";
 import { PLayerData } from "./PLayerData";
 import { DataSave } from "./DataSave";
 
@@ -36,7 +36,7 @@ export class Configs {
         let obj: object[] = [];
 
         armatureDisplay.armature().getSlots().map((item) => {
-            let a = { name: item.name, index: item.displayIndex, color: item._colorTransform };
+            let a = { name: item.name, index: item.displayIndex, colorTransform: item._colorTransform };
 
             obj.push(a);
         });
@@ -44,5 +44,40 @@ export class Configs {
         PLayerData.instance.arrButtonData.push(obj);
 
         DataSave.saveDataStorage(Configs.KEY_STORAGE_ACCESS, PLayerData.instance.arrButtonData);
+    }
+
+    public static setArmatureDisplayByObj(armatureDisplayInput: dragonBones.ArmatureDisplay, objectsInput: object[]): void {
+        let slots = armatureDisplayInput.armature().getSlots();
+
+        slots.map((slot) => {
+            let object = objectsInput.filter((obj) => { return obj["name"] === slot.name; })[0];
+
+            slot.displayIndex = object["index"];
+
+            let colorTransform = Configs.changeObjectToColorTransform(object["colorTransform"]);
+            slot._setColor(colorTransform);
+        });
+    }
+
+    public static getSpriteFrameFromSlot(armatureDisplay: dragonBones.ArmatureDisplay, slotName: string): SpriteFrame[] {
+        let armature = armatureDisplay!.armature();
+        let slot = armature.getSlot(slotName);
+        let slotDatas = slot._displayDatas;
+
+        let arrSpriteFrame: SpriteFrame[] = [];
+
+        slotDatas.map((value) => {
+            arrSpriteFrame.push(value.texture.spriteFrame);
+        });
+
+        return arrSpriteFrame;
+    }
+
+    public static setColorRGBToSlot(slot: dragonBones.Slot, color: Color): void {
+        slot._setColor(new dragonBones.ColorTransform(1, color.r / 255, color.g / 255, color.b / 255, 0, 0, 0, 0));
+    }
+
+    public static changeObjectToColorTransform(objInput: object): dragonBones.ColorTransform {
+        return new dragonBones.ColorTransform(1, objInput["redMultiplier"], objInput["greenMultiplier"], objInput["blueMultiplier"], 0, 0, 0, 0);
     }
 }
