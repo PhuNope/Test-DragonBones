@@ -32,7 +32,7 @@ export class ReplaceSlotDisplay extends Component {
 
     //button texture
     buttonTextureNode: Node | null = null;
-    index: number | null = null;
+    id: object[] | null = null;
 
     onLoad() {
         this._armatureDisplay = this.armatureDisplay;
@@ -137,34 +137,36 @@ export class ReplaceSlotDisplay extends Component {
 
         buttonTextureNode.getComponent(ButtonTextureController).setUpAddSave(this._armatureDisplay, (inputReplaceDisplay) => { this.onChangeView(inputReplaceDisplay); });
 
-        buttonTextureNode.getComponent(ButtonTextureController).setIndexInData(PLayerData.instance.arrButtonData.length - 1);
+        buttonTextureNode.getComponent(ButtonTextureController).setIdInData(Configs.changeArmatureDisplayToObject(this._armatureDisplay));
 
-        buttonTextureNode.getComponent(ButtonTextureController).setDataButtonDelete((buttonNodeInput: Node, indexInput: number) => { this.getDataButtonTexture(buttonNodeInput, indexInput); });
+        buttonTextureNode.getComponent(ButtonTextureController).setDataButtonDelete((buttonNodeInput: Node, idInput: object[]) => { this.getDataButtonTexture(buttonNodeInput, idInput); });
     }
 
     private onChangeView(replaceArmatureDisplay: dragonBones.ArmatureDisplay): void {
-        Configs.SetIndexAndColor(replaceArmatureDisplay, this.armatureDisplay);
+        Configs.SetIndexAndColorByArmatureDisplay(replaceArmatureDisplay, this.armatureDisplay);
     }
 
     private onButtonDelete(): void {
-        console.log(PLayerData.instance.arrButtonData);
-
-        console.log(this.index);
-
-        if (!this.buttonTextureNode || !this.index) return;
+        if (!this.buttonTextureNode || !this.id) return;
 
         this.buttonTextureNode.destroy();
 
-        PLayerData.instance.arrButtonData.splice(this.index, 1);
+        let index = PLayerData.instance.arrButtonData.findIndex((item) => { this.id === item; });
+
+        PLayerData.instance.arrButtonData.splice(index, 1);
 
         DataSave.saveDataStorage(Configs.KEY_STORAGE_ACCESS, PLayerData.instance.arrButtonData);
 
-        console.log(PLayerData.instance.arrButtonData);
+        let listButtonTexture = this.contentScrollView.children;
+
+        console.log("deleted");
+
+        this.id = null;
     }
 
-    getDataButtonTexture(buttonNodeInput: Node, indexInput: number) {
+    getDataButtonTexture(buttonNodeInput: Node, idInput: object[]) {
         this.buttonTextureNode = buttonNodeInput;
-        this.index = indexInput;
+        this.id = idInput;
     }
 
     onLoadDataSaved() {
@@ -192,26 +194,30 @@ export class ReplaceSlotDisplay extends Component {
 
             buttonTextureNode.getComponent(ButtonTextureController).setUpOnLoad(item, (inputReplaceDisplay) => { this.onChangeView(inputReplaceDisplay); });
 
-            buttonTextureNode.getComponent(ButtonTextureController).setIndexInData(index);
+            buttonTextureNode.getComponent(ButtonTextureController).setIdInData(Configs.changeArmatureDisplayToObject(this._armatureDisplay));
 
-            buttonTextureNode.getComponent(ButtonTextureController).setDataButtonDelete((buttonNodeInput: Node, indexInput: number) => { this.getDataButtonTexture(buttonNodeInput, indexInput); });
+            buttonTextureNode.getComponent(ButtonTextureController).setDataButtonDelete((buttonNodeInput: Node, idInput: object[]) => { this.getDataButtonTexture(buttonNodeInput, idInput); });
+
+            //
+            console.log(buttonTextureNode.getComponent(ButtonTextureController).armatureDisplay);
+
         });
     }
 
     onRedButton() {
-        Configs.setColorRGBToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(255, 0, 0));
+        Configs.changeColorRGBToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(255, 0, 0));
     }
 
     onBlueButton() {
-        Configs.setColorRGBToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(0, 0, 255));
+        Configs.changeColorRGBToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(0, 0, 255));
     }
 
     onGreenButton() {
-        Configs.setColorRGBToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(0, 255, 0));
+        Configs.changeColorRGBToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(0, 255, 0));
     }
 
     onBlackButton() {
-        Configs.setColorRGBToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(0, 0, 0));
+        Configs.changeColorRGBToSlot(this._armatureDisplay.armature().getSlot("hair"), new Color(0, 0, 0));
     }
 }
 

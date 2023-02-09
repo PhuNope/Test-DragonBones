@@ -11,7 +11,7 @@ export class ButtonTextureController extends Component {
 
     onClickViewCallback: CallableFunction | null = null;
 
-    indexInData: number | null = null;
+    id: object[] | null = null;
 
     setDataButtonDeleteCallback: CallableFunction | null = null;
 
@@ -19,7 +19,6 @@ export class ButtonTextureController extends Component {
 
     }
 
-    //set up
     setUpAddSave(armatureDisplayInput: dragonBones.ArmatureDisplay, onClickView: CallableFunction) {
         // let slots = this.armatureDisplay.armature().getSlots();
 
@@ -33,7 +32,7 @@ export class ButtonTextureController extends Component {
         //     slots[index]._setColor(itemGameData["color"]);
         // });
 
-        Configs.SetIndexAndColor(armatureDisplayInput, this.armatureDisplay);
+        Configs.SetIndexAndColorByArmatureDisplay(armatureDisplayInput, this.armatureDisplay);
 
         this.onClickViewCallback = onClickView;
     }
@@ -48,17 +47,17 @@ export class ButtonTextureController extends Component {
         this.setDataButtonDeleteCallback = setDataButtonDeleteCallback;
     }
 
-    setIndexInData(indexInput: number): void {
-        this.indexInData = indexInput;
+    setIdInData(idInput: object[]): void {
+        this.id = idInput;
     }
+
+    getIdInData(): object[] { return this.id; }
 
     onClickView() {
         this.onClickViewCallback(this.armatureDisplay);
 
-        this.setDataButtonDeleteCallback(this.node, this.indexInData);
+        this.setDataButtonDeleteCallback(this.node, this.id);
     }
-
-
 }
 
 

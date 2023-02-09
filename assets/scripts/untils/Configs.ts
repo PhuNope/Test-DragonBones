@@ -18,7 +18,7 @@ export class Configs {
         curentArmatureDisplay.armature().invalidUpdate();
     }
 
-    public static SetIndexAndColor(replaceArmatureDisplay: dragonBones.ArmatureDisplay, curentArmatureDisplay: dragonBones.ArmatureDisplay): void {
+    public static SetIndexAndColorByArmatureDisplay(replaceArmatureDisplay: dragonBones.ArmatureDisplay, curentArmatureDisplay: dragonBones.ArmatureDisplay): void {
         let currentSlots = curentArmatureDisplay.armature().getSlots();
 
         replaceArmatureDisplay.armature().getSlots().map((replaceItem) => {
@@ -33,13 +33,7 @@ export class Configs {
     }
 
     public static addToListAndSave(armatureDisplay: dragonBones.ArmatureDisplay): void {
-        let obj: object[] = [];
-
-        armatureDisplay.armature().getSlots().map((item) => {
-            let a = { name: item.name, index: item.displayIndex, colorTransform: item._colorTransform };
-
-            obj.push(a);
-        });
+        let obj = Configs.changeArmatureDisplayToObject(armatureDisplay);
 
         PLayerData.instance.arrButtonData.push(obj);
 
@@ -59,6 +53,18 @@ export class Configs {
         });
     }
 
+    public static changeArmatureDisplayToObject(armatureDisplayInput: dragonBones.ArmatureDisplay): object[] {
+        let obj: object[] = [];
+
+        armatureDisplayInput.armature().getSlots().map((item) => {
+            let a = { name: item.name, index: item.displayIndex, colorTransform: item._colorTransform };
+
+            obj.push(a);
+        });
+
+        return obj;
+    }
+
     public static getSpriteFrameFromSlot(armatureDisplay: dragonBones.ArmatureDisplay, slotName: string): SpriteFrame[] {
         let armature = armatureDisplay!.armature();
         let slot = armature.getSlot(slotName);
@@ -73,7 +79,7 @@ export class Configs {
         return arrSpriteFrame;
     }
 
-    public static setColorRGBToSlot(slot: dragonBones.Slot, color: Color): void {
+    public static changeColorRGBToSlot(slot: dragonBones.Slot, color: Color): void {
         slot._setColor(new dragonBones.ColorTransform(1, color.r / 255, color.g / 255, color.b / 255, 0, 0, 0, 0));
     }
 
